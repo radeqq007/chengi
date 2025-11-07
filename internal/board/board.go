@@ -1,6 +1,8 @@
 package board
 
-import "chengi/internal/pieces"
+import (
+	"chengi/internal/pieces"
+)
 
 type Board struct {
 	Grid  [8][8]pieces.Piece
@@ -54,10 +56,11 @@ func pieceValue(pieceType pieces.PieceType) int {
 	}[pieceType]
 }
 
-func (b *Board) GenerateMoves(color pieces.Color) {
-	for y := 0; y < 8; y++ {
-		for x := 0; x < 8; x++ {
-			p := b.Grid[x][y]
+func (b *Board) GenerateMoves(color pieces.Color) []Move {
+	var moves []Move
+	for row := range 8 {
+		for col := range 8 {
+			p := b.Grid[row][col]
 			
 			if p.Type == pieces.Blank || p.Color != color {
 				continue
@@ -65,12 +68,52 @@ func (b *Board) GenerateMoves(color pieces.Color) {
 
 			switch p.Type {
 			case pieces.Pawn:
-
+				moves = append(moves, b.generatePawnMoves(row, col, p)...)
 			}
 		}
 	}
+	return moves
 }
 
-// func generatePawnMoves(x, y int, ) {
-//
-// }
+// TODO: implement en passant
+func (b *Board) generatePawnMoves(row, col int, piece pieces.Piece) []Move {
+	var moves []Move
+
+	var direction int
+	if piece.Color == pieces.Black {
+		direction = 1
+	} else {
+		direction = -1
+	}
+	
+	targetRow := row + direction
+	if targetRow >= 0 && targetRow < 8 {
+		if !b.isSquareTaken(col, targetRow) {
+			moves = append(moves, Move{FromX: col, FromY: row, ToX: col, ToY: targetRow})
+		}
+
+		// Taking
+		if col < 7 && b.isSquareTaken(col + 1, targetRow) && b.Grid[targetRow][col + 1].Color != piece.Color {
+			moves = append(moves, Move{FromX: col, FromY: row, ToX: col + 1, ToY: targetRow})
+		}
+
+		if col > 0 && b.isSquareTaken(col - 1, targetRow) && b.Grid[targetRow][col - 1].Color != piece.Color {
+			moves = append(moves, Move{FromX: col, FromY: row, ToX: col - 1, ToY: targetRow})
+		}
+	}
+
+	// First pawn move for black
+	if row == 1 && piece.Color == pieces.Black && !b.isSquareTaken(col, row + 1) && !b.isSquareTaken(col, row + 2) {
+		moves = append(moves, Move{FromX: col, FromY: row, ToX: col, ToY: row + 2})
+	}
+
+	// First pawn move for white
+	if row == 6 && piece.Color == pieces.White && !b.isSquareTaken(col, row - 1) && !b.isSquareTaken(col, row - 2) {
+		moves = append(moves, Move{FromX: col, FromY: row, ToX: col, ToY: row - 2})
+	}
+	return moves
+}
+
+func (b *Board) isSquareTaken(col, row int) bool {
+	return b.Grid[row][col].Type != pieces.Blank
+}
