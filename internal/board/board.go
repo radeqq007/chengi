@@ -40,8 +40,8 @@ type Move struct {
 }
 
 func (b *Board) MakeMove(m Move) {
-	b.Grid[m.ToCol][m.ToRow] = b.Grid[m.FromCol][m.FromRow]
-	b.Grid[m.FromCol][m.FromRow] = pieces.Piece{}
+	b.Grid[m.ToRow][m.ToCol] = b.Grid[m.FromRow][m.FromCol]
+	b.Grid[m.FromRow][m.FromCol] = pieces.Piece{}
 }
 
 func pieceValue(pieceType pieces.PieceType) int {
