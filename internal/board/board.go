@@ -90,33 +90,33 @@ func (b *Board) generatePawnMoves(row, col int, piece pieces.Piece) []Move {
 	
 	targetRow := row + direction
 	if b.isInBounds(targetRow) {
-		if !b.isSquareTaken(col, targetRow) {
+		if !b.isSquareTaken(targetRow, col) {
 			moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col, ToRow: targetRow})
 		}
 
 		// Taking
-		if col < 7 && b.isSquareTaken(col + 1, targetRow) && b.Grid[targetRow][col + 1].Color != piece.Color {
+		if col < 7 && b.isSquareTaken(targetRow, col + 1) && b.Grid[targetRow][col + 1].Color != piece.Color {
 			moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col + 1, ToRow: targetRow})
 		}
 
-		if col > 0 && b.isSquareTaken(col - 1, targetRow) && b.Grid[targetRow][col - 1].Color != piece.Color {
+		if col > 0 && b.isSquareTaken(targetRow, col - 1) && b.Grid[targetRow][col - 1].Color != piece.Color {
 			moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col - 1, ToRow: targetRow})
 		}
 	}
 
 	// First pawn move for black
-	if row == 1 && piece.Color == pieces.Black && !b.isSquareTaken(col, row + 1) && !b.isSquareTaken(col, row + 2) {
+	if row == 1 && piece.Color == pieces.Black && !b.isSquareTaken(row + 1, col) && !b.isSquareTaken(row + 2, col) {
 		moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col, ToRow: row + 2})
 	}
 
 	// First pawn move for white
-	if row == 6 && piece.Color == pieces.White && !b.isSquareTaken(col, row - 1) && !b.isSquareTaken(col, row - 2) {
+	if row == 6 && piece.Color == pieces.White && !b.isSquareTaken(row - 1, col) && !b.isSquareTaken(row - 2, col) {
 		moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col, ToRow: row - 2})
 	}
 	return moves
 }
 
-func (b *Board) isSquareTaken(col, row int) bool {
+func (b *Board) isSquareTaken(row, col int) bool {
 	return b.Grid[row][col].Type != pieces.Blank
 }
 
