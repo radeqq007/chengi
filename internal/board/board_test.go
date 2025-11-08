@@ -207,3 +207,25 @@ func TestGeneratePawnMoves(t *testing.T) {
 		})
 	}
 }
+
+func TestIsSquareTaken(t *testing.T) {
+	b := New()
+
+	tests := []struct {
+		row, col int
+		want     bool
+	}{
+		{0, 0, true},  // Black rook
+		{1, 0, true},  // Black pawn
+		{3, 3, false}, // Empty square
+		{6, 4, true},  // White pawn
+		{7, 7, true},  // White rook
+	}
+
+	for _, tt := range tests {
+		got := b.isSquareTaken(tt.row, tt.col)
+		if got != tt.want {
+			t.Errorf("isSquareTaken(%d, %d) = %v, want %v", tt.row, tt.col, got, tt.want)
+		}
+	}
+}
