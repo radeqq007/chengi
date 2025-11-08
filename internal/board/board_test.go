@@ -229,3 +229,26 @@ func TestIsSquareTaken(t *testing.T) {
 		}
 	}
 }
+
+func TestIsInBounds(t *testing.T) {
+	b := New()
+
+	tests := []struct {
+		index int
+		want  bool
+	}{
+		{-1, false},
+		{0, true},
+		{3, true},
+		{7, true},
+		{8, false},
+		{100, false},
+	}
+
+	for _, tt := range tests {
+		got := b.isInBounds(tt.index)
+		if got != tt.want {
+			t.Errorf("isInBounds(%d) = %v, want %v", tt.index, got, tt.want)
+		}
+	}
+}
