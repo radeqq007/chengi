@@ -43,8 +43,15 @@ type Move struct {
 }
 
 func (b *Board) MakeMove(m Move) {
-	b.Grid[m.ToRow][m.ToCol] = b.Grid[m.FromRow][m.FromCol]
-	b.Grid[m.FromRow][m.FromCol] = pieces.Piece{}
+	piece := b.Grid[m.FromRow][m.FromCol]
+	if m.Promotion != pieces.Blank {
+		piece.Type = m.Promotion
+		piece.Value = pieceValue(m.Promotion)
+	}
+	
+
+	b.Grid[m.ToRow][m.ToCol] = piece
+	b.Grid[m.FromRow][m.FromCol] = pieces.Piece{Type: pieces.Blank, Value: int(pieces.Blank)}
 }
 
 func pieceValue(pieceType pieces.PieceType) int {
@@ -90,20 +97,47 @@ func (b *Board) generatePawnMoves(row, col int, piece pieces.Piece) []Move {
 	} else {
 		direction = -1
 	}
+
 	
 	targetRow := row + direction
 	if b.isInBounds(targetRow) {
 		if !b.isSquareTaken(targetRow, col) {
-			moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col, ToRow: targetRow})
+			if targetRow == 0 || targetRow == 7 {
+				moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col,  ToRow: row + direction, Promotion: pieces.Queen})
+				moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col,  ToRow: row + direction, Promotion: pieces.Rook})
+				moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col,  ToRow: row + direction, Promotion: pieces.Bishop})
+				moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col,  ToRow: row + direction, Promotion: pieces.Knight})
+			} else {
+				moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col, ToRow: targetRow})
+			}
 		}
-
-		// Taking
+		
+		// Taking (right)
 		if col < 7 && b.isSquareTaken(targetRow, col + 1) && b.Grid[targetRow][col + 1].Color != piece.Color {
-			moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col + 1, ToRow: targetRow})
+			if targetRow == 0 || targetRow == 7 {
+				moves = append(moves,
+					Move{FromCol: col, FromRow: row, ToCol: col + 1, ToRow: targetRow, Promotion: pieces.Queen},
+					Move{FromCol: col, FromRow: row, ToCol: col + 1, ToRow: targetRow, Promotion: pieces.Rook},
+					Move{FromCol: col, FromRow: row, ToCol: col + 1, ToRow: targetRow, Promotion: pieces.Bishop},
+					Move{FromCol: col, FromRow: row, ToCol: col + 1, ToRow: targetRow, Promotion: pieces.Knight},
+				)
+			} else {
+				moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col + 1, ToRow: targetRow})
+			}
 		}
-
+			
+			// Taking (left)
 		if col > 0 && b.isSquareTaken(targetRow, col - 1) && b.Grid[targetRow][col - 1].Color != piece.Color {
-			moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col - 1, ToRow: targetRow})
+			if targetRow == 0 || targetRow == 7 {
+				moves = append(moves,
+					Move{FromCol: col, FromRow: row, ToCol: col - 1, ToRow: targetRow, Promotion: pieces.Queen},
+					Move{FromCol: col, FromRow: row, ToCol: col - 1, ToRow: targetRow, Promotion: pieces.Rook},
+					Move{FromCol: col, FromRow: row, ToCol: col - 1, ToRow: targetRow, Promotion: pieces.Bishop},
+					Move{FromCol: col, FromRow: row, ToCol: col - 1, ToRow: targetRow, Promotion: pieces.Knight},
+				)
+			} else {
+				moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col - 1, ToRow: targetRow})
+			}
 		}
 	}
 
@@ -116,6 +150,7 @@ func (b *Board) generatePawnMoves(row, col int, piece pieces.Piece) []Move {
 	if row == 6 && piece.Color == pieces.White && !b.isSquareTaken(row - 1, col) && !b.isSquareTaken(row - 2, col) {
 		moves = append(moves, Move{FromCol: col, FromRow: row, ToCol: col, ToRow: row - 2})
 	}
+	
 	return moves
 }
 
