@@ -252,3 +252,25 @@ func TestIsInBounds(t *testing.T) {
 		}
 	}
 }
+
+func TestPieceValue(t *testing.T) {
+	tests := []struct {
+		pieceType pieces.PieceType
+		want      int
+	}{
+		{pieces.King, 0},
+		{pieces.Pawn, 1},
+		{pieces.Knight, 3},
+		{pieces.Bishop, 3},
+		{pieces.Rook, 5},
+		{pieces.Queen, 9},
+		{pieces.Blank, 0},
+	}
+
+	for _, tt := range tests {
+		got := pieceValue(tt.pieceType)
+        if got != tt.want {
+			t.Errorf("pieceValue(%v) = %d, want %d", tt.pieceType, got, tt.want)
+		}
+	}
+}
