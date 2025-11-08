@@ -6,14 +6,14 @@ type Piece struct {
 	Color Color
 }
 
-type Color int
+type Color uint8
 
 const (
 	Black Color = iota
 	White
 )
 
-type PieceType int
+type PieceType uint8
 
 const (
 	Blank PieceType = iota
