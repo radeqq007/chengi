@@ -8,19 +8,22 @@ type Board struct {
 	Grid  [8][8]pieces.Piece
 }
 
-func New() *Board {
-	b := Board{}
-	
-	// Setup pawns
-	for i := 0; i < 8; i++ {
-		b.Grid[1][i] = pieces.Piece{Type: pieces.Pawn, Value: pieceValue(pieces.Pawn), Color: pieces.Black}
-		b.Grid[6][i] = pieces.Piece{Type: pieces.Pawn, Value: pieceValue(pieces.Pawn), Color: pieces.White}
-	} 
+func New(board ...[8][8]pieces.Piece) *Board {
+	b := &Board{};
+	if len(board) > 0 {
+		b.Grid = board[0]
+	} else {
+		// Setup pawns
+		for i := 0; i < 8; i++ {
+			b.Grid[1][i] = pieces.Piece{Type: pieces.Pawn, Value: pieceValue(pieces.Pawn), Color: pieces.Black}
+			b.Grid[6][i] = pieces.Piece{Type: pieces.Pawn, Value: pieceValue(pieces.Pawn), Color: pieces.White}
+			} 
+			
+			b.setupBackRank(0, pieces.Black)
+			b.setupBackRank(7, pieces.White)
+		}
 
-	b.setupBackRank(0, pieces.Black)
-	b.setupBackRank(7, pieces.White)
-
-	return &b
+	return b
 }
 
 func (b *Board) setupBackRank(row int, color pieces.Color) {
