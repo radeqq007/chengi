@@ -181,6 +181,36 @@ func (b *Board) generateKnightMoves(row, col int, piece pieces.Piece) []Move {
 	return moves
 }
 
+func (b *Board) generateSlidingMoves(row, col, rowDir, colDir int, piece pieces.Piece) []Move {
+	var moves []Move
+	newRow := row + rowDir
+	newCol := col + colDir
+	for b.isInBounds(newRow) && b.isInBounds(newCol) {
+		target := b.Grid[newRow][newCol]
+		if target.Type == pieces.Blank {
+			moves = append(moves, Move{
+				FromRow: row,
+				FromCol: col,
+				ToRow:   newRow,
+				ToCol:   newCol,
+			})
+		} else {
+			if target.Color != piece.Color {
+				moves = append(moves, Move{
+					FromRow: row,
+					FromCol: col,
+					ToRow:   newRow,
+					ToCol:   newCol,
+				})
+			}
+			break
+		}
+		newRow += rowDir
+		newCol += colDir
+	}
+	return moves
+}
+
 
 func (b *Board) isSquareTaken(row, col int) bool {
 	return b.Grid[row][col].Type != pieces.Blank
