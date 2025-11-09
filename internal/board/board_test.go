@@ -207,6 +207,61 @@ func TestGeneratePawnMoves(t *testing.T) {
 	}
 }
 
+func TestGenerateKnightMoves(t *testing.T) {
+	tests := []struct {
+		name          string
+		setupFunc     func() *Board
+		color         pieces.Color
+		expectedMoves int
+		description   string
+	}{
+		{
+			name: "white knight with all moves available",
+			setupFunc: func() *Board {
+				grid := [8][8]pieces.Piece{}
+				grid[2][2] = pieces.Piece{Type: pieces.Knight, Value: 3, Color: pieces.White}
+				return New(grid)
+			},
+			color:         pieces.White,
+			expectedMoves: 8,
+			description:   "All moves available",
+		},
+		{
+			name: "white knight at edge with limited moves",
+			setupFunc: func() *Board {
+				grid := [8][8]pieces.Piece{}
+				grid[0][3] = pieces.Piece{Type: pieces.Knight, Value: 3, Color: pieces.Black}
+				return New(grid)
+			},
+			color:         pieces.Black,
+			expectedMoves: 4,
+			description:   "Limited moves due to board edge",
+		},
+		{
+			name: "white knight in the corner",
+			setupFunc: func() *Board {
+				grid := [8][8]pieces.Piece{}
+				grid[7][7] = pieces.Piece{Type: pieces.Knight, Value: 3, Color: pieces.Black}
+				return New(grid)
+			},
+			color:         pieces.White,
+			expectedMoves: 2,
+			description:   "Only two moves available from corner",
+		},
+	}
+	
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := tt.setupFunc()
+			moves := b.GenerateMoves(tt.color)
+			if len(moves) != tt.expectedMoves {
+				t.Errorf("%s: expected %d moves, got %d. Description: %s",
+					tt.name, tt.expectedMoves, len(moves), tt.description)
+			}
+		})
+	}
+}
+
 func TestIsSquareTaken(t *testing.T) {
 	b := New()
 
