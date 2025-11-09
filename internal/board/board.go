@@ -78,6 +78,8 @@ func (b *Board) GenerateMoves(color pieces.Color) []Move {
 			switch p.Type {
 			case pieces.Pawn:
 				moves = append(moves, b.generatePawnMoves(row, col, p)...)
+			case pieces.Knight:
+				moves = append(moves, b.generateKnightMoves(row, col, p)...)
 				// TODO: Add other piece types
 			}
 		}
@@ -151,6 +153,34 @@ func (b *Board) generatePawnMoves(row, col int, piece pieces.Piece) []Move {
 
 	return moves
 }
+
+func (b *Board) generateKnightMoves(row, col int, piece pieces.Piece) []Move {
+	var moves []Move
+	var offsets = [8][2]int{
+		{-2, -1}, {-2, 1}, {-1, -2}, {-1, 2},
+		{1, -2}, {1, 2}, {2, -1}, {2, 1},
+	}
+
+	for _, offset := range offsets {
+		newRow := row + offset[0]
+		newCol := col + offset[1]
+
+		if b.isInBounds(newRow) && b.isInBounds(newCol) {
+			target := b.Grid[newRow][newCol]
+			if target.Type == pieces.Blank || target.Color != piece.Color {
+				moves = append(moves, Move{
+					FromRow: row,
+					FromCol: col,
+					ToRow:   newRow,
+					ToCol:   newCol,
+				})
+			}
+		}
+	}
+
+	return moves
+}
+
 
 func (b *Board) isSquareTaken(row, col int) bool {
 	return b.Grid[row][col].Type != pieces.Blank
