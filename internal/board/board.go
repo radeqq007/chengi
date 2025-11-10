@@ -82,6 +82,8 @@ func (b *Board) GenerateMoves(color pieces.Color) []Move {
 				moves = append(moves, b.generateKnightMoves(row, col, p)...)
 			case pieces.Bishop:
 				moves = append(moves, b.generateBishopMoves(row, col, p)...)
+			case pieces.Rook:
+				moves = append(moves, b.generateRookMoves(row, col, p)...)
 			}
 		}
 	}
@@ -187,6 +189,16 @@ func (b *Board) generateBishopMoves(row, col int, piece pieces.Piece) []Move {
 	moves = append(moves, b.generateSlidingMoves(row, col, -1, -1, piece)...)
 	moves = append(moves, b.generateSlidingMoves(row, col, 1, -1, piece)...)
 	moves = append(moves, b.generateSlidingMoves(row, col, -1, 1, piece)...)
+
+	return moves
+}
+
+func (b *Board) generateRookMoves(row, col int, piece pieces.Piece) []Move {
+	var moves []Move
+	moves = append(moves, b.generateSlidingMoves(row, col, 1, 0, piece)...)
+	moves = append(moves, b.generateSlidingMoves(row, col, -1, 0, piece)...)
+	moves = append(moves, b.generateSlidingMoves(row, col, 0, 1, piece)...)
+	moves = append(moves, b.generateSlidingMoves(row, col, 0, -1, piece)...)
 
 	return moves
 }
