@@ -80,7 +80,8 @@ func (b *Board) GenerateMoves(color pieces.Color) []Move {
 				moves = append(moves, b.generatePawnMoves(row, col, p)...)
 			case pieces.Knight:
 				moves = append(moves, b.generateKnightMoves(row, col, p)...)
-				// TODO: Add other piece types
+			case pieces.Bishop:
+				moves = append(moves, b.generateBishopMoves(row, col, p)...)
 			}
 		}
 	}
@@ -180,6 +181,15 @@ func (b *Board) generateKnightMoves(row, col int, piece pieces.Piece) []Move {
 
 	return moves
 }
+func (b *Board) generateBishopMoves(row, col int, piece pieces.Piece) []Move {
+	var moves []Move
+	moves = append(moves, b.generateSlidingMoves(row, col, 1, 1, piece)...)
+	moves = append(moves, b.generateSlidingMoves(row, col, -1, -1, piece)...)
+	moves = append(moves, b.generateSlidingMoves(row, col, 1, -1, piece)...)
+	moves = append(moves, b.generateSlidingMoves(row, col, -1, 1, piece)...)
+
+	return moves
+}
 
 func (b *Board) generateSlidingMoves(row, col, rowDir, colDir int, piece pieces.Piece) []Move {
 	var moves []Move
@@ -210,7 +220,6 @@ func (b *Board) generateSlidingMoves(row, col, rowDir, colDir int, piece pieces.
 	}
 	return moves
 }
-
 
 func (b *Board) isSquareTaken(row, col int) bool {
 	return b.Grid[row][col].Type != pieces.Blank
