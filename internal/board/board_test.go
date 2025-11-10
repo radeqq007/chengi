@@ -249,7 +249,89 @@ func TestGenerateKnightMoves(t *testing.T) {
 			description:   "Only two moves available from corner",
 		},
 	}
-	
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			b := tt.setupFunc()
+			moves := b.GenerateMoves(tt.color)
+			if len(moves) != tt.expectedMoves {
+				t.Errorf("%s: expected %d moves, got %d. Description: %s",
+					tt.name, tt.expectedMoves, len(moves), tt.description)
+			}
+		})
+	}
+}
+
+func TestGenerateBishopMoves(t *testing.T) {
+	tests := []struct {
+		name          string
+		setupFunc     func() *Board
+		color         pieces.Color
+		expectedMoves int
+		description   string
+	}{
+		{
+			name: "white bishop in the center",
+			setupFunc: func() *Board {
+				grid := [8][8]pieces.Piece{}
+				grid[3][3] = pieces.Piece{Type: pieces.Bishop, Value: 3, Color: pieces.White}
+				return New(grid)
+			},
+			color:         pieces.White,
+			expectedMoves: 13,
+			description:   "All moves available",
+		},
+		{
+			name: "white bishop in the corner",
+			setupFunc: func() *Board {
+				grid := [8][8]pieces.Piece{}
+				grid[0][0] = pieces.Piece{Type: pieces.Bishop, Value: 3, Color: pieces.White}
+				return New(grid)
+			},
+			color:         pieces.White,
+			expectedMoves: 7,
+			description:   "7 moves aviable",
+		},
+		{
+			name: "white bishop at the edge",
+			setupFunc: func() *Board {
+				grid := [8][8]pieces.Piece{}
+				grid[3][0] = pieces.Piece{Type: pieces.Bishop, Value: 3, Color: pieces.White}
+				return New(grid)
+			},
+			color:         pieces.White,
+			expectedMoves: 7,
+			description:   "7 moves aviable",
+		},
+		{
+			name: "white bishop that can take a piece",
+			setupFunc: func() *Board {
+				grid := [8][8]pieces.Piece{}
+				grid[3][0] = pieces.Piece{Type: pieces.Bishop, Value: 3, Color: pieces.White}
+				grid[4][1] = pieces.Piece{Type: pieces.Pawn, Value: 1, Color: pieces.Black}
+				return New(grid)
+			},
+			color:         pieces.White,
+			expectedMoves: 4,
+			description:   "4 moves aviable",
+		},
+		{
+			name: "white bishop blocked from all sides",
+			setupFunc: func() *Board {
+				grid := [8][8]pieces.Piece{}
+				grid[3][3] = pieces.Piece{Type: pieces.Bishop, Value: 3, Color: pieces.White}
+				grid[2][2] = pieces.Piece{Type: pieces.Pawn, Value: 1, Color: pieces.Black}
+				grid[2][4] = pieces.Piece{Type: pieces.Pawn, Value: 1, Color: pieces.Black}
+				grid[4][2] = pieces.Piece{Type: pieces.Pawn, Value: 1, Color: pieces.Black}
+				grid[4][4] = pieces.Piece{Type: pieces.Pawn, Value: 1, Color: pieces.Black}
+				return New(grid)
+			},
+			color:         pieces.White,
+			expectedMoves: 4,
+			description:   "4 captures aviable",
+		},
+	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			b := tt.setupFunc()
