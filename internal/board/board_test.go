@@ -241,7 +241,7 @@ func TestGenerateKnightMoves(t *testing.T) {
 			name: "white knight in the corner",
 			setupFunc: func() *Board {
 				grid := [8][8]pieces.Piece{}
-				grid[7][7] = pieces.Piece{Type: pieces.Knight, Value: 3, Color: pieces.Black}
+				grid[7][7] = pieces.Piece{Type: pieces.Knight, Value: 3, Color: pieces.White}
 				return New(grid)
 			},
 			color:         pieces.White,
